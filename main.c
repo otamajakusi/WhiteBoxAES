@@ -1,5 +1,14 @@
 #include "aes_table.c"
 
+void shiftRows (u8 state[16]) {
+  u8 out[16];
+  int shiftTab[16] = {0, 5, 10, 15, 4, 9, 14, 3, 8, 13, 2, 7, 12, 1, 6, 11};
+  for (int i = 0; i < 16; i++) {
+    out[i] = state[shiftTab[i]];
+  }
+  memcpy(state, out, sizeof(out));
+}
+
 
 #define GETU32(pt) (\
         ((u32)(pt)[0] << 24) ^ ((u32)(pt)[1] << 16) ^\

@@ -1,4 +1,4 @@
-CSOURCES      := main.c aes.c
+CSOURCES      := main.c
 CXXSOURCES    := genTables.cpp RandMat.cpp aes.c
 OBJECTS	      := $(CSOURCES:.c=.o)
 OBJECTS2	  := $(CXXSOURCES:.cpp=.o)
@@ -8,13 +8,14 @@ CPPFLAGS       = -lntl -lm
 LDFLAGS	       = -static
 EXEC 	      := whitebox
 EXEC2         := genTables
+CROSS_COMPILE ?=
 
 .PHONY.: all tables clean mrproper help
 
 all: $(EXEC)
 
 $(EXEC): $(OBJECTS)
-	$(CC) -o $@ $(CSOURCES) $(CFLAGS) $(LDFLAGS)
+	$(CROSS_COMPILE)gcc -o $@ $(CSOURCES) $(CFLAGS) $(LDFLAGS)
 
 tables: $(EXEC2)
 
