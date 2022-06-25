@@ -283,11 +283,48 @@ void printTables()
   fclose (tables);
 }
 
+static void dump(const u8 *s, int size) {
+  for (int i = 0; i < size; i ++) {
+    printf("%02x", s[i]);
+    if ((i + 1) % 0x10 == 0) {
+      printf("\n");
+    }
+  }
+}
+
+static int to_hex(int c) {
+  if (c >= '0' && c <= '9') {
+    return c - '0';
+  }
+  if (c >= 'a' && c <= 'f') {
+    return c - 'a' + 10;
+  }
+  if (c >= 'A' && c <= 'F') {
+    return c - 'A' + 10;
+  }
+  return -1;
+}
 
 
-int main(void) {
+int main(int argc, char *argv[]) {
   u8 expandedKey[176];
   u8 key[16] = {0};
+
+  if (argc > 1) {
+    const char *p = argv[1];
+    for (int i = 0; i < sizeof(key); i ++) {
+      int h = to_hex(p[i * 2]) & 0x7;
+      int l = to_hex(p[i * 2 + 1]) & 0x7;
+      if (h < 0 || l < 0) {
+        fprintf(stderr, "input key is invalid\n");
+        return 1;
+      }
+      // printf("%x:%x:%02x\n", h, l, (h<<4)|l);
+      key[i] = ((h << 4) | l);
+    }
+  }
+
+  dump(key, sizeof(key));
   
   printf("Generating tables.h...\n");
   expandKey (key, expandedKey);

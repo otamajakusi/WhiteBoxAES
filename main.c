@@ -10,18 +10,20 @@
         (ct)[2] = (u8)((st) >>  8); (ct)[3] = (u8)(st); }
 
 
-void printstate(unsigned char * in){
+void printstate(unsigned char * in, int eol){
         for(int i = 0; i < 16; i++) {
                 printf("%.2X", in[i]);
 
         }
-        printf("\n");
+        if (eol) {
+            printf("\n");
+        }
 
         return;
 }
 
 char ascii2hex(char in){
-    char out;
+    char out = -1;
 
     if (('0' <= in) && (in <= '9'))
         out = in - '0';
@@ -35,7 +37,7 @@ char ascii2hex(char in){
     return out;
 }
 
-void asciiStr2hex (char * in, char * out, int len){
+void asciiStr2hex (const char * in, char * out, int len){
     int j = 0;
     for (int i = 0; i < len; i += 2)
         out[j++]  = (ascii2hex(in[i ]) << 4) +  ascii2hex(in[i+1]);
@@ -44,13 +46,19 @@ void asciiStr2hex (char * in, char * out, int len){
 int main(int argc, char * argv[]){
         unsigned char OUT[32];
         unsigned char IN[32];
-        asciiStr2hex(argv[1], (char *)IN, 32);
-        //unsigned char IN[32] = "00112233445566778899aabbccddeeff";
-        printstate(IN);
+        unsigned char CIPHER[32] = "00112233445566778899aabbccddeeff"; // default cipher text
+        const char *p;
+        if (argc <= 1) {
+            p = (char*)CIPHER;
+        } else {
+            p = argv[1];
+        }
+        asciiStr2hex(p, (char *)IN, 32);
+        //printstate(IN);
 
         aes_128_table_encrypt(IN, OUT);
 
-        printstate(OUT);
+        printstate(OUT, 0);
 
         return 0;
 }
